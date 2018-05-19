@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1526759854 source:c:\users\wilson\documents\codeblock\mosqueta v 2\main.cpp
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+
