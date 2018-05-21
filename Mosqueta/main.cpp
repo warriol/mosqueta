@@ -1,36 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <time.h>
 
+#define APUESTAMINIMA 50
+#define GANADASCONSECUTIVAS 2
+#define MANO "Mano"
 #define MENSAJESALIDA "Nos vemos la próxima.\n"
 #define MENSAJESINDINERO "Para jugar hay que pagar amigo.\n"
 #define MENSAJEORGULLO "Has perdido mucho, donde está ese orgullo? Inténtalo de nuevo!.\n"
 #define MENSAJEORGULLO1 "Si vuelvo a casa sin plata me matan.\n"
 #define MENSAJEORGULLO2 "Esto no puede quedar así.\n"
 #define MENSAJEORGULLO3 "Si perdí la anterior, de seguro ahora gano.\n"
-#define APUESTAMINIMA 50
+#define MENSAJEBOLAENMANO "Tu si que eres perceptivo, te animas a no contarle esto a nadie?\n"
+#define MENSAJEBOLAENCOPA "Quien te crees que soy? Vete de aquí.\n"
 #define MONTOMAXIMO 1000
-#define GANADASCONSECUTIVAS 2
 #define MONTOPORORGULLO 200
-#define MANO "Mano"
 #define SALIR "Salir"
 
 using namespace std;
 
 void mostrarMensajePorOrgullo(){
     switch (rand() % 3){
-        case 1:
+        case 0:
             printf("%s", MENSAJEORGULLO1);
         break;
-        case 2:
+        case 1:
             printf("%s", MENSAJEORGULLO2);
         break;
-        case 3:
+        case 2:
             printf("%s", MENSAJEORGULLO3);
         break;
     }
 }
+
 void mostrarNumeros(int fin){
     int i;
     for (i = 1; i <= fin; i++)
@@ -39,7 +43,7 @@ void mostrarNumeros(int fin){
 
 void mostrarPosicionBolita(int fin, int posB){
     int i;
-    for (i = 0; i < fin; i++){
+    for (i = 1; i <= fin; i++){
         if (i != posB)
             printf("0 ");
         else
@@ -132,17 +136,19 @@ int main(){
     // semilla aleatoria en base a la hora y fecha actual
     srand (time(NULL));
     // variables enteras
-    int dineroDisponible, opcion, posicionBolita, resultado,cantidadCopas, ponderacionDeGanancia;
+    int dineroDisponible, opcion, posicionBolita, resultado,cantidadCopas, ponderacionDeGanancia, montoInicial;
+    // variables inicializadas
     int apuesta         = 0;    // se inicia en 0 para contemplar la opcion 4, si se diera la primera vez q apuesta
-    int salir           = 1;    // 1: gano / no puede salir --- 0: salir / perido
     int partidasAlHilo  = 0;    // cantidad de veces q gana consecutivamente
     int copas[9] = {0};         // arreglo para las copas
+    // variables booleanas
+    bool salir = true;          // controla el fin del juego
 
     mostrarMensaje(001);        // mensaje de bienvenida y reglas
 
     do{
         dineroDisponible = pedirNumeroEnRango(50, 1000);                     // se pide el dinero que dispone
-
+        montoInicial = dineroDisponible;
         /**
         * este bloque if ya no serìa necesario por el control de la funcion de pedirNumeroEnRango
         * consultar al profesor, de ser asi se debe quitar
@@ -166,7 +172,7 @@ int main(){
             do{                                                             // COMIENZA EL JUEGO
                 if(dineroDisponible < 50){                                  // FIN DEL JUEGO POR REGLA
                     printf("%s", MENSAJESINDINERO);
-                    salir = 0;                                              // SALE POR NO TENER DINERO
+                    salir = false;                                              // SALE POR NO TENER DINERO
                 }else{                                                      // inicio de jugada
                     mostrarCopas(cantidadCopas, copas);                     // muestro el tablero
                     opcion = pedirOpcion(cantidadCopas);                    // espero por jugada correcta
@@ -184,7 +190,7 @@ int main(){
                             */
                             if(apuesta < APUESTAMINIMA || apuesta > dineroDisponible){          // apuesta invalidad por monto
                                 printf("%s", MENSAJESINDINERO);
-                                salir = 0;                                  // salir
+                                salir = false;                                  // salir
                             }else{                                          // apuesta correcta
                                 if (partidasAlHilo == GANADASCONSECUTIVAS){ // hay q estafar - PIERDE
                                     do{
@@ -213,10 +219,10 @@ int main(){
                         case 10:                                             // el usuario quiere Salir
                             if(MONTOPORORGULLO < apuesta && resultado == 0) {// si elige salir y (apostò mas 200 y NO perdió)
                                 mostrarMensajePorOrgullo();
-                                salir = 1;                                  // no puede salir
+                                salir = true;                                  // no puede salir
                             }else{
                                 printf("%s\n", MENSAJESALIDA);
-                                salir = 0;
+                                salir = false;
                             }
                         break;
                         /**
@@ -230,16 +236,22 @@ int main(){
                         */
                         case 11:                                            // mano
                             if (partidasAlHilo == GANADASCONSECUTIVAS){     // tengo la bola en la mano
+                                montoInicial -= dineroDisponible;           // mono incial menos monto actual = ganancia o perdida
+                                if(montoInicial > 0)                        // si hay perdidas
+                                    dineroDisponible += montoInicial * 2;   // devuelvo el doble e imprimo
+                                printf("\n%d\n", dineroDisponible);
+                                printf("%s", MENSAJEBOLAENMANO);
                             }else{                                          // la bola esta en una copa
+                                posicionBolita = (rand() % cantidadCopas) + 1; // muestro posicion de bola
+                                printf("%s", MENSAJEBOLAENCOPA);            // imprimo mensjae
                             }
-                            salir = 0;
-                        break;
-                        default:
+                            salir = false;
                         break;
                     }
                 }
-            }while(salir != 0);                                             // FIN DEL JUEGO
+            }while(salir);                                              // FIN DEL JUEGO
         }
-    }while(salir != 0);
+    }while(salir);
     return 0;
 }
+
