@@ -18,9 +18,13 @@
 #define MONTOMAXIMO 1000
 #define MONTOPORORGULLO 200
 #define SALIR "Salir"
+#define MAXIMOENTRADA 20
 
 using namespace std;
 
+/**
+ * funcion aleatoria para mostrar los 3 mensajes pro orgullo
+ */
 void mostrarMensajePorOrgullo(){
     switch (rand() % 3){
         case 0:
@@ -35,12 +39,19 @@ void mostrarMensajePorOrgullo(){
     }
 }
 
+/**
+ * imprime los numeros debajo de las copas
+ */
 void mostrarNumeros(int fin){
     int i;
     for (i = 1; i <= fin; i++)
         printf("%d ", i);
 }
 
+/**
+ * imprime la posición de la bolita
+ * muestra los numeros bajo las copas
+ */
 void mostrarPosicionBolita(int fin, int posB){
     int i;
     for (i = 1; i <= fin; i++){
@@ -54,6 +65,9 @@ void mostrarPosicionBolita(int fin, int posB){
     printf("\n");
 }
 
+/**
+ * imprime mensajes
+ */
 void mostrarMensaje(int msj){
     // funcion que impre mensajes en pantalla dependiendo del codigo que reciba
     switch(msj){
@@ -69,95 +83,122 @@ void mostrarMensaje(int msj){
     }
 }
 
-void mostrarCopas(int fin, int copas[]){
-    int i;
-    printf("\n");
-    for (i = 0; i < fin; i++)
-        printf("%d ", copas[i]);
-    printf("\n");
+/**
+ * imprime las copas
+ * imprime numero bajo las copas
+ */
+void mostrarCopas(int fin, char copas[]){
+    printf("\n%2s\n", copas);
     mostrarNumeros(fin);
     printf("\nCopa?:\n");
 }
 
+/**
+ * funcion que pide al usuario un numero entre un X e Y dado
+ * de nocorresponder el valor ingresado por el usuario se vuelve a llamar hasta q sea correcto
+ */
 int pedirNumeroEnRango(int ini, int fin){
     // funcion que pide al usuario un numero entre ini y fin
-    int res, cont = 0;
-    char entrada;
+    int res, cont = 0, retorno;
+    char limpiarEntrada;
     // pido un entero
     scanf("%d", &res);
     // limpio la basura
     do{
-        entrada = getchar();
+        limpiarEntrada = getchar();
         cont++;
-    }while(entrada != '\n');
+    }while(limpiarEntrada != '\n');
     // verifico que el numero este en el rango
     if(res < ini || res > fin || cont > 1)
         // si no esta en rango llamo de nuevo a la funcion para repetir el proceso
         pedirNumeroEnRango(ini, fin);
     else
         // devuelvo el resultado
-        return res;
+        retorno = res;
+    return retorno;
 }
 
-int pedirOpcion(int copas){
-    char opcion[6];
-    int cont = 0;
+/**
+ * MENU - interacción con el usuario
+ *
+ *
+ *
+ *
+ *      HAY ERRORES
+ *
+ *
+ *
+ */
+int pedirOpcion(int cantidadCopas){
+    char opcion[MAXIMOENTRADA];
+    int cont = 0, retorno;
     do{
-        opcion[cont] = getchar();
+        if(cont < 7)
+            opcion[cont] = getchar();
         cont++;
     }while(opcion[cont-1] != '\n');
+    opcion[cont-1] = '\0';
     switch(cont){
         case 2:     // digito
             cont = opcion[0] - 48;
-            if(cont > 0 && cont <= copas)
-                return cont;
+            if(cont > 0 && cont <= cantidadCopas)
+                retorno = cont;
+            else
+                pedirOpcion(cantidadCopas);
         break;
         case 5:     // mano
-            /**
-             *  CONSULTAR AL PROFESOR
-             *  Al utilizar strcpm() no distingue de mayusculas o minusculas
-             *  entonces escribir Mano, mano O mANO es lo mismo
-             *  esto hay que tomarlo como error o estarìa bien
-             */
-            if(strcmp(opcion,MANO))
-                return 11;
+            if(strcmp(opcion,MANO)==0)
+                retorno = 11;
+            else
+                pedirOpcion(cantidadCopas);
         break;
         case 6:     // salir
-            if(strcmp(opcion,SALIR))
-                return 10;
+            // printf("\n%s - %s\n", opcion, SALIR);
+            if(strcmp(opcion,SALIR)==0)
+                retorno = 10;
+            else
+                pedirOpcion(cantidadCopas);
         break;
         default:    // error seguro
-            pedirOpcion(copas);
+            pedirOpcion(cantidadCopas);
         break;
     }
+    return retorno;
 }
 
+/**
+ * funcion principal
+ */
 int main(){
     // semilla aleatoria en base a la hora y fecha actual
     srand (time(NULL));
     // variables enteras
-    int dineroDisponible, opcion, posicionBolita, resultado,cantidadCopas, ponderacionDeGanancia, montoInicial;
+    int dineroDisponible, opcion, posicionBolita, resultado,cantidadCopas, ponderacionDeGanancia, montoInicial, i;
     // variables inicializadas
     int apuesta         = 0;    // se inicia en 0 para contemplar la opcion 4, si se diera la primera vez q apuesta
     int partidasAlHilo  = 0;    // cantidad de veces q gana consecutivamente
-    int copas[9] = {0};         // arreglo para las copas
+    char copas[18];              // arreglo para las copas
     // variables booleanas
-    bool salir = true;          // controla el fin del juego
+    bool noSalir = true, noTerminarJuego = true;          // controla el fin del juego
 
     mostrarMensaje(001);        // mensaje de bienvenida y reglas
 
     do{
-        dineroDisponible = pedirNumeroEnRango(50, 1000);                     // se pide el dinero que dispone
-        montoInicial = dineroDisponible;
-        /**
-        * este bloque if ya no serìa necesario por el control de la funcion de pedirNumeroEnRango
-        * consultar al profesor, de ser asi se debe quitar
-        */
-        if  (dineroDisponible > MONTOMAXIMO || dineroDisponible < APUESTAMINIMA){
+        dineroDisponible = pedirNumeroEnRango(0, 1000);                     // se pide el dinero que dispone
+        montoInicial = dineroDisponible;                                    // montoInicial se usa al final, para saber cuanto dinero perdio en caso de tener q devolver si tenia bola en mano
+        if  (dineroDisponible < APUESTAMINIMA){                             // dineroDisponible > MONTOMAXIMO se quita validacion porque esto ya se controla en la funcion pedirNumeroEnRango
             printf("%s\n", MENSAJESALIDA);
+            noTerminarJuego = false;
         }else{
             mostrarMensaje(002);                                            // MSJ: Elegir la cantidad de compas con las que jugar
             cantidadCopas = pedirNumeroEnRango(3, 9);                       // cantidad de copas para jugar
+            for (i=0; i<cantidadCopas*2; i++){                              // lleno arreglo con 'O'
+                if(i%2==0)                                                  // si es par va 'O'
+                    copas[i] = 'O';                                         // delimitar el arreglo hasta cantidad de copas
+                else
+                    copas[i] = ' ';                                         // si es impar va espacio.
+            }
+            copas[i+1] = '\0';                                              // lo paso a string
             switch(cantidadCopas){                                          // ponderacion de ganancia segun cantidad de copas
                 case 3: case 4: case 5:
                     ponderacionDeGanancia = 2;
@@ -169,10 +210,12 @@ int main(){
                     ponderacionDeGanancia = 4;
                 break;
             }
+
             do{                                                             // COMIENZA EL JUEGO
                 if(dineroDisponible < 50){                                  // FIN DEL JUEGO POR REGLA
                     printf("%s", MENSAJESINDINERO);
-                    salir = false;                                              // SALE POR NO TENER DINERO
+                    noSalir = false;                                        // SALE POR NO TENER DINERO
+                    noTerminarJuego = false;                                   // TERMINAR EL JUEGO
                 }else{                                                      // inicio de jugada
                     mostrarCopas(cantidadCopas, copas);                     // muestro el tablero
                     opcion = pedirOpcion(cantidadCopas);                    // espero por jugada correcta
@@ -180,17 +223,10 @@ int main(){
                         case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:  // jugar
                             printf("Apuesta?:\n");
                             apuesta = pedirNumeroEnRango(APUESTAMINIMA, dineroDisponible);      // espero monto correcto
-                            /**
-                            * debido al control anterio sobre la apuesta, esta serà siempre correcta
-                            * consulta la profesor: el mensaje de error por no tener dinero suficiente
-                            * no seria necesario
-                            * en ese caso quitar control de apuesta
-                            * dejar control de dinero, por si apuesta mas de lo que tiene
-                            * consultar al profesor si parte del control es no dejar que el usuario apueste mas de lo que tiene
-                            */
-                            if(apuesta < APUESTAMINIMA || apuesta > dineroDisponible){          // apuesta invalidad por monto
+                            if(apuesta > dineroDisponible){          // apuesta invalidad por mont {apuesta < APUESTAMINIMA}
                                 printf("%s", MENSAJESINDINERO);
-                                salir = false;                                  // salir
+                                noSalir = false;                                  // salir
+                                noTerminarJuego = false;                                   // TERMINAR EL JUEGO
                             }else{                                          // apuesta correcta
                                 if (partidasAlHilo == GANADASCONSECUTIVAS){ // hay q estafar - PIERDE
                                     do{
@@ -219,21 +255,13 @@ int main(){
                         case 10:                                             // el usuario quiere Salir
                             if(MONTOPORORGULLO < apuesta && resultado == 0) {// si elige salir y (apostò mas 200 y NO perdió)
                                 mostrarMensajePorOrgullo();
-                                salir = true;                                  // no puede salir
+                                noSalir = true;                              // no puede salir
                             }else{
                                 printf("%s\n", MENSAJESALIDA);
-                                salir = false;
+                                noSalir = false;
+                                noTerminarJuego = false;                        // TERMINAR EL JUEGO
                             }
                         break;
-                        /**
-                        * continuar con la lògica del pedido de mano
-                        * crear variable para guardar el monto perdido
-                        * ?consultar
-                        * se debe tener encuenta la ganancia general contando si gana o pierde ir sumando o restando
-                        * o solo se toma encuenta el dinero perdido es decir pierda 100, gana 50; se dvuelve 50*2 o 100*2
-                        * 19/05/2018
-                        * wilson
-                        */
                         case 11:                                            // mano
                             if (partidasAlHilo == GANADASCONSECUTIVAS){     // tengo la bola en la mano
                                 montoInicial -= dineroDisponible;           // mono incial menos monto actual = ganancia o perdida
@@ -245,13 +273,14 @@ int main(){
                                 posicionBolita = (rand() % cantidadCopas) + 1; // muestro posicion de bola
                                 printf("%s", MENSAJEBOLAENCOPA);            // imprimo mensjae
                             }
-                            salir = false;
+                            noSalir = false;
+                            noTerminarJuego = false;                           // TERMINAR EL JUEGO
                         break;
                     }
                 }
-            }while(salir);                                              // FIN DEL JUEGO
+            }while(noSalir);                                                // FIN DEL JUEGO
         }
-    }while(salir);
+    }while(noTerminarJuego);
+
     return 0;
 }
-
