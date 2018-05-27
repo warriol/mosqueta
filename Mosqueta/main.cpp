@@ -140,9 +140,11 @@ int pedirNumeroEnRango(int ini, int fin){
  * \fn Controla las entradas del usuario en la seccion opciones. (Salir, Mano, 1 - 9)
  *  Verifica que si ingresa un numero de copa, este dentro del rango de copas
  * \param cantidadCopas: contiene el numero de copas con las q se esta jugando
+ * \param apuesta: monto apostado
+ * \param apostadorAcerto: indica si el apostador gano o perdio
  * \return Se retorna un entero entre 1 y 11, Corresponden de 1 a 9 para las copas, 10 para Salir, 11 para Mano
  */
-int pedirOpcion(int cantidadCopas){
+int pedirOpcion(int cantidadCopas, int apuesta, bool apostadorAcerto){
     char opcion[MAXIMOENTRADA];
     int cont, retorno;
     bool noSalir;
@@ -170,7 +172,12 @@ int pedirOpcion(int cantidadCopas){
             break;
             case 6:     // salir
                 if(strcmp(opcion,SALIR)==0)
-                    retorno = 10;
+                    if( (MONTOPORORGULLO < apuesta) && (!apostadorAcerto) ) {   // si elige salir y (apostò mas 200 y perdió)
+                        mostrarMensajePorOrgullo();                 // muestro mensajes aleatorios
+                        noSalir = true;                             // no puede salir
+                    }else{                                          // casos en que puede salir
+                        retorno = 10;                               // SALIR
+                    }
                 else
                     noSalir = true;
             break;
@@ -204,9 +211,8 @@ int pedirPonderacionApuesta(int cantidadCopas){
     return retorno;
 }
 
-
 int main(){
-    srand (1);                  // senilla NO aleatoria 
+    srand (1);                  // senilla NO aleatoria
     //srand(time(NULL));          // semilla aleatoria en base a la hora y fecha actual
     //---------------------------- variables enteras
     int dineroDisponible, opcion, posicionBolita, cantidadCopas, ponderacionDeGanancia, montoInicial;
@@ -216,7 +222,7 @@ int main(){
     int arregloCopas[9] = {0};  // arreglo para las copas
     //---------------------------- variables booleanas
     bool noSalir = true;        // controla el fin del juego
-    bool apostadorAcerto;       // verdadero gana; falso pierde
+    bool apostadorAcerto = true;// verdadero gana; falso pierde
     mostrarMensaje(001);        // mensaje de bienvenida y reglas
     do{
         dineroDisponible = pedirNumeroEnRango(0, MONTOMAXIMO);              // se pide el dinero que dispone
@@ -234,7 +240,7 @@ int main(){
                     noSalir = false;                                        // SALE POR NO TENER DINERO
                 }else{                                                      // inicio de jugada
                     mostrarCopas(cantidadCopas, arregloCopas);              // muestro el tablero
-                    opcion = pedirOpcion(cantidadCopas);                    // espero por opcion correcta (1-9; Salir; Mano)
+                    opcion = pedirOpcion(cantidadCopas, apuesta, apostadorAcerto);  // espero por opcion correcta (1-9; Salir; Mano)
                     switch(opcion){                                         // se define la accion a realizar dependiendo de la opcion recibida
                         //---------------------------------------------------- casos en que se elige la posicion de la copa
                         case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
@@ -273,13 +279,8 @@ int main(){
                         break;
                         //---------------------------------------------------- casos en que el jugador quiere salir
                         case 10:
-                            if( (MONTOPORORGULLO < apuesta) && (!apostadorAcerto) ) {   // si elige salir y (apostò mas 200 y NO perdió)
-                                mostrarMensajePorOrgullo();                 // muestro mensajes aleatorios
-                                noSalir = true;                             // no puede salir
-                            }else{                                          // casos en que puede salir
-                                printf("%s\n", MENSAJESALIDA);              // muestro mensaje de salida
-                                noSalir = false;                            // TERMINA EL JUEGO
-                            }
+                            printf("%s\n", MENSAJESALIDA);              // muestro mensaje de salida
+                            noSalir = false;                            // TERMINA EL JUEGO
                         break;
                         //---------------------------------------------------- casos en que el juegador pregunat si tiene la bola en la mano
                         case 11:                                            // mano
@@ -290,7 +291,7 @@ int main(){
                                 printf("\n%d\n", dineroDisponible);         // imprimo el monto
                                 printf("%s", MENSAJEBOLAENMANO);            // MSJ: bola en mano
                             }else{                                          // la bola esta en una copa
-                            posicionBolita = (rand() % cantidadCopas) + 1;  // muestro posicion de bola
+                                posicionBolita = (rand() % cantidadCopas) + 1;  // muestro posicion de bola
                                 printf("%s", MENSAJEBOLAENCOPA);            // MSJ: mensaje de salida por no tener bola en mano
                             }
                             noSalir = false;                                // TERMINA EL JUEGO
