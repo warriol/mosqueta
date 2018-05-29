@@ -51,7 +51,7 @@ void mostrarNumeros(int fin){
         printf("%d ", i);
 }
 
-/** \brief Wilson - 27/05/2018 - 13:45
+/** \brief Santiago - 29/05/2018
  * \fn Funcion que imprime en pantalla un arreglo con cero y pone un punto donde deberìa estar la bolitra.
  * \param int fin
  * \param int posB
@@ -136,7 +136,7 @@ int pedirNumeroEnRango(int ini, int fin){
     return retorno;
 }
 
-/** \brief Wilson - 27/05/2018 - 13:45
+/** \brief Santiago - 29/05/2018
  * \fn Controla las entradas del usuario en la seccion opciones. (Salir, Mano, 1 - 9)
  *  Verifica que si ingresa un numero de copa, este dentro del rango de copas
  * \param cantidadCopas: contiene el numero de copas con las q se esta jugando
