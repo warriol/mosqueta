@@ -4,21 +4,21 @@
 #include <stdbool.h>
 #include <time.h>
 
-#define APUESTAMINIMA 50
+#define APUESTAMINIMA       50
 #define GANADASCONSECUTIVAS 2
-#define MANO "Mano"
-#define MAXIMOENTRADA 20
-#define MENSAJEBOLAENMANO "Tu si que eres perceptivo, te animas a no contarle esto a nadie?\n"
-#define MENSAJEBOLAENCOPA "Quien te crees que soy? Vete de aquí.\n"
-#define MENSAJEORGULLO "Has perdido mucho, donde está ese orgullo? Inténtalo de nuevo!.\n"
-#define MENSAJEORGULLO1 "Si vuelvo a casa sin plata me matan.\n"
-#define MENSAJEORGULLO2 "Esto no puede quedar así.\n"
-#define MENSAJEORGULLO3 "Si perdí la anterior, de seguro ahora gano.\n"
-#define MENSAJESALIDA "Nos vemos la próxima.\n"
-#define MENSAJESINDINERO "Para jugar hay que pagar amigo.\n"
-#define MONTOMAXIMO 1000
-#define MONTOPORORGULLO 200
-#define SALIR "Salir"
+#define MAXIMOENTRADA       20
+#define MONTOMAXIMO         1000
+#define MONTOPORORGULLO     200
+#define MANO                "Mano"
+#define MENSAJEBOLAENMANO   "Tu si que eres perceptivo, te animas a no contarle esto a nadie?\n"
+#define MENSAJEBOLAENCOPA   "Quien te crees que soy? Vete de aquí.\n"
+#define MENSAJEORGULLO      "Has perdido mucho, donde está ese orgullo? Inténtalo de nuevo!.\n"
+#define MENSAJEORGULLO1     "Si vuelvo a casa sin plata me matan.\n"
+#define MENSAJEORGULLO2     "Esto no puede quedar así.\n"
+#define MENSAJEORGULLO3     "Si perdí la anterior, de seguro ahora gano.\n"
+#define MENSAJESALIDA       "Nos vemos la próxima.\n"
+#define MENSAJESINDINERO    "Para jugar hay que pagar amigo.\n"
+#define SALIR               "Salir"
 
 using namespace std;
 
@@ -28,14 +28,14 @@ using namespace std;
  * \param int posB
  */
 void mostrarMensajePorOrgullo(){
-    switch (rand() % 3){
-        case 0:
+    switch (rand() % 3){        // numero aleatorio entre 0 y 2
+        case 0:                 // caso 0: mensaje 1
             printf("%s", MENSAJEORGULLO1);
         break;
-        case 1:
+        case 1:                 // caso 1: mensaje 2
             printf("%s", MENSAJEORGULLO2);
         break;
-        case 2:
+        case 2:                 // caso 2: mensaje 3
             printf("%s", MENSAJEORGULLO3);
         break;
     }
@@ -47,6 +47,7 @@ void mostrarMensajePorOrgullo(){
  */
 void mostrarNumeros(int fin){
     int i;
+    // fin: indica la cantidad de copas que elegió el usuario para jugar
     for (i = 1; i <= fin; i++)
         printf("%d ", i);
 }
@@ -58,14 +59,14 @@ void mostrarNumeros(int fin){
  */
 void mostrarPosicionBolita(int fin, int posB){
     int i;
-    for (i = 1; i <= fin; i++){
-        if (i != posB)
-            printf("0 ");
-        else
-            printf(". ");
+    for (i = 1; i <= fin; i++){     // itera desde 1 y mientras sea menor a la cantiad de copas
+        if (i != posB)              // si el iterador NO tiene el mismo numero que la posición de la bolita
+            printf("0 ");           // imprimo un 0
+        else                        // s el iterador tiene la misma posiciòn donde esta la
+            printf(". ");           // imprimo un .
     }
     printf("\n");
-    mostrarNumeros(fin);
+    mostrarNumeros(fin);            // llamo a la funcion mostrarNumeros
     printf("\n");
 }
 
@@ -95,8 +96,8 @@ void mostrarMensaje(int msjId){
 void mostrarCopas(int fin, int arregloCopas[]){
     int i;
     printf("\n");
-    for (i = 0; i < fin; i++)
-        printf("%d ", arregloCopas[i]);
+    for (i = 0; i < fin; i++)               //niterador desde cero y mientras sea menor a la cantidad de copas
+        printf("%d ", arregloCopas[i]);     // imprimo el arreglo con ceros con espacio de por medio
     printf("\n");
     mostrarNumeros(fin);
     printf("\nCopa?:\n");
@@ -111,27 +112,21 @@ void mostrarCopas(int fin, int arregloCopas[]){
  *
  */
 int pedirNumeroEnRango(int ini, int fin){
-    // funcion que pide al usuario un numero entre ini y fin
     int res, cont, retorno;
     char entrada;
     bool noSalir;
     do{
         cont = 0;
-        noSalir = false;
-        // pido un entero
-        scanf("%d", &res);
-        // limpio la posible basura
-        do{
+        noSalir = false;                            // se entiende que el usuario ingresa bien de primera, se inicializa para salir
+        scanf("%d", &res);                          // pido un entero
+        do{                                         // si hay basura en el buffer...
             entrada = getchar();
             cont++;
-        }while(entrada != '\n');
-        // verifico que el numero este en el rango
-        if( (res < ini || res > fin) || cont > 1)
-            // si no esta en rango llamo de nuevo a la funcion para repetir el proceso
-            noSalir = true;
-        else
-            // devuelvo el resultado
-            retorno = res;
+        }while(entrada != '\n');                    // limpio la posible basura
+        if( (res < ini || res > fin) || cont > 1)   // verifico que el numero este en el rango
+            noSalir = true;                         // si no esta en rango, no lo dejo salir
+        else                                        //
+            retorno = res;                          // si esta en rango devuelvo el resultado
     }while(noSalir);
     return retorno;
 }
@@ -197,15 +192,15 @@ int pedirOpcion(int cantidadCopas, int apuesta, bool apostadorAcerto){
  */
 int pedirPonderacionApuesta(int cantidadCopas){
     int retorno;
-    switch(cantidadCopas){
+    switch(cantidadCopas){          // de acuerdo a la cantidad de copas se establece el moltiplicador de ganancia
         case 3: case 4: case 5:
-            retorno = 2;
+            retorno = 2;            // se multiplica por 2
         break;
         case 6: case 7: case 8:
-            retorno = 3;
+            retorno = 3;            // se multiplica por 3
         break;
         case 9:
-            retorno = 4;
+            retorno = 4;            // se multiplica por 4
         break;
     }
     return retorno;
@@ -279,8 +274,8 @@ int main(){
                         break;
                         //---------------------------------------------------- casos en que el jugador quiere salir
                         case 10:
-                            printf("%s\n", MENSAJESALIDA);              // muestro mensaje de salida
-                            noSalir = false;                            // TERMINA EL JUEGO
+                            printf("%s\n", MENSAJESALIDA);                  // muestro mensaje de salida
+                            noSalir = false;                                // TERMINA EL JUEGO
                         break;
                         //---------------------------------------------------- casos en que el juegador pregunat si tiene la bola en la mano
                         case 11:                                            // mano
