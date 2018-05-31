@@ -11,12 +11,12 @@
 #define MONTOPORORGULLO     200
 #define MANO                "Mano"
 #define MENSAJEBOLAENMANO   "Tu si que eres perceptivo, te animas a no contarle esto a nadie?\n"
-#define MENSAJEBOLAENCOPA   "Quien te crees que soy? Vete de aquí.\n"
-#define MENSAJEORGULLO      "Has perdido mucho, donde está ese orgullo? Inténtalo de nuevo!.\n"
+#define MENSAJEBOLAENCOPA   "Quien te crees que soy? Vete de aqui.\n"
+#define MENSAJEORGULLO      "Has perdido mucho, donde esta ese orgullo? Intentalo de nuevo!.\n"
 #define MENSAJEORGULLO1     "Si vuelvo a casa sin plata me matan.\n"
-#define MENSAJEORGULLO2     "Esto no puede quedar así.\n"
-#define MENSAJEORGULLO3     "Si perdí la anterior, de seguro ahora gano.\n"
-#define MENSAJESALIDA       "Nos vemos la próxima.\n"
+#define MENSAJEORGULLO2     "Esto no puede quedar asi.\n"
+#define MENSAJEORGULLO3     "Si perdi la anterior, de seguro ahora gano.\n"
+#define MENSAJESALIDA       "Nos vemos la proxima.\n"
 #define MENSAJESINDINERO    "Para jugar hay que pagar amigo.\n"
 #define SALIR               "Salir"
 
@@ -47,22 +47,22 @@ void mostrarMensajePorOrgullo(){
  */
 void mostrarNumeros(int fin){
     int i;
-    // fin: indica la cantidad de copas que elegió el usuario para jugar
+    // fin: indica la cantidad de copas que elegio el usuario para jugar
     for (i = 1; i <= fin; i++)
         printf("%d ", i);
 }
 
 /** \brief Santiago - 29/05/2018
- * \fn Funcion que imprime en pantalla un arreglo con cero y pone un punto donde deberìa estar la bolitra.
+ * \fn Funcion que imprime en pantalla un arreglo con cero y pone un punto donde deberia estar la bolitra.
  * \param int fin
  * \param int posB
  */
 void mostrarPosicionBolita(int fin, int posB){
     int i;
     for (i = 1; i <= fin; i++){     // itera desde 1 y mientras sea menor a la cantiad de copas
-        if (i != posB)              // si el iterador NO tiene el mismo numero que la posición de la bolita
+        if (i != posB)              // si el iterador NO tiene el mismo numero que la posicion de la bolita
             printf("0 ");           // imprimo un 0
-        else                        // s el iterador tiene la misma posiciòn donde esta la
+        else                        // s el iterador tiene la misma posicion donde esta la
             printf(". ");           // imprimo un .
     }
     printf("\n");
@@ -77,13 +77,13 @@ void mostrarPosicionBolita(int fin, int posB){
 void mostrarMensaje(int msjId){
     switch(msjId){
         case 001:   // bienvenida
-            printf("Bienvenido/a, a continuación comenzaremos a jugar.\n");
-            printf("Para cada jugada debes indicar en qué copa se encuentra la bola.\n");
-            printf("Recuerda que también puedes optar por retirarte marcando \"Salir\".\n");
-            printf("Ahora dime, ¿cuánto dinero tienes disponible?\n\n");
+            printf("Bienvenido/a, a continuacion comenzaremos a jugar.\n");
+            printf("Para cada jugada debes indicar en que copa se encuentra la bola.\n");
+            printf("Recuerda que tambien puedes optar por retirarte marcando \"Salir\".\n");
+            printf("Ahora dime, �cuanto dinero tienes disponible?\n\n");
         break;
         case 002:   // pregunta cuantas copas
-            printf("\nElige cuantas copas (de 3 a 9). Más copas, más ganas.\nCuántas serán?\n\n");
+            printf("\nElige cuantas copas (de 3 a 9). Mas copas, mas ganas.\nCuantas seran?\n\n");
         break;
     }
 }
@@ -112,21 +112,25 @@ void mostrarCopas(int fin, int arregloCopas[]){
  *
  */
 int pedirNumeroEnRango(int ini, int fin){
-    int res, cont, retorno;
-    char entrada;
+    int cont, retorno, i;
+    char entrada[20];
     bool noSalir;
     do{
         cont = 0;
-        noSalir = false;                            // se entiende que el usuario ingresa bien de primera, se inicializa para salir
-        scanf("%d", &res);                          // pido un entero
-        do{                                         // si hay basura en el buffer...
-            entrada = getchar();
+        noSalir = false;                                // se entiende que el usuario ingresa bien de primera, se inicializa para salir
+        do{                                             // leo de la entrada
+            entrada[cont] = getchar();
             cont++;
-        }while(entrada != '\n');                    // limpio la posible basura
-        if( (res < ini || res > fin) || cont > 1)   // verifico que el numero este en el rango
-            noSalir = true;                         // si no esta en rango, no lo dejo salir
-        else                                        //
-            retorno = res;                          // si esta en rango devuelvo el resultado
+        }while(entrada[cont-1] != '\n');
+        entrada[cont-1] = '\0';                         // lo paso a string
+        retorno = atoi (entrada);                       // lo paso a entero
+        for(i=0; i<cont-1; i++){
+            if( entrada[i] < '0' || entrada[i] > '9' )  // verifico que sea un numero
+                noSalir = true;                         // si no, no lo dejo salir
+        }
+
+        if( retorno < ini || retorno > fin )            // verifico que el numero este en el rango
+            noSalir = true;                             // si no esta en rango, no lo dejo salir
     }while(noSalir);
     return retorno;
 }
@@ -167,7 +171,7 @@ int pedirOpcion(int cantidadCopas, int apuesta, bool apostadorAcerto){
             break;
             case 6:     // salir
                 if(strcmp(opcion,SALIR)==0)
-                    if( (MONTOPORORGULLO < apuesta) && (!apostadorAcerto) ) {   // si elige salir y (apostò mas 200 y perdió)
+                    if( (MONTOPORORGULLO < apuesta) && (!apostadorAcerto) ) {   // si elige salir y (aposto mas 200 y perdio)
                         mostrarMensajePorOrgullo();                 // muestro mensajes aleatorios
                         noSalir = true;                             // no puede salir
                     }else{                                          // casos en que puede salir
@@ -185,10 +189,10 @@ int pedirOpcion(int cantidadCopas, int apuesta, bool apostadorAcerto){
 }
 
 /** \brief Wilson - 27/05/2018 - 13:45
- * \fn De acuerdo a la cantidad de copas con las que se juegue, la ganancia serà diferente.
+ * \fn De acuerdo a la cantidad de copas con las que se juegue, la ganancia sera diferente.
  *  A mayor cantidad de copa mayor ganancia.
  * \param  cantidadCopas: Recibe la cantidad de copas con las que se juega.
- * \return Retorno un entero equivalente al valor por el que se multiplicarà la ganncia
+ * \return Retorno un entero equivalente al valor por el que se multiplicara la ganncia
  */
 int pedirPonderacionApuesta(int cantidadCopas){
     int retorno;
@@ -221,7 +225,7 @@ int main(){
     mostrarMensaje(001);        // mensaje de bienvenida y reglas
     do{
         dineroDisponible = pedirNumeroEnRango(0, MONTOMAXIMO);              // se pide el dinero que dispone
-        montoInicial = dineroDisponible;                                    // guardo el monto inicial para carlculas cuanto perdió
+        montoInicial = dineroDisponible;                                    // guardo el monto inicial para carlculas cuanto perdio
         if (dineroDisponible < APUESTAMINIMA){                              // monto disponible INCORRECTO
             printf("%s\n", MENSAJESALIDA);                                  // MSJ: para jugar hay q pagar
             noSalir = false;                                                // SALE POR NO TENER DINERO
